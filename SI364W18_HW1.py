@@ -19,6 +19,11 @@ import json
 app = Flask(__name__)
 app.debug = True
 
+@app.route('/')
+def main_page():
+    return "Here's the main page."
+
+
 @app.route('/class')
 def hello_to_you():
     return 'Welcome to SI 364!'
@@ -63,14 +68,14 @@ def number_form():
     <form action="http://localhost:5000/question" method='POST'>
 <input type="text" name="number"> <br><br>
 <input type="submit" value="Enter a whole number"> <br><br>
-""" ## HINT: In there ^ is where you need to add a little bit to the code...
-    if request.method == "POST":
-        result_str = ""
-        for k in request.form:
-            doubledn_num = int(request.form.get(k,"")) ** 2
-            string_of_doubled_num = str(doubledn_num)
-            result_str += "Double your {} is: <i>{}</i><br><br>".format(k, string_of_doubled_num)
-        return formstring + result_str
+"""
+    if request.method == "POST": #returning post
+        result_str = "" #creating string
+        for k in request.form: #iterating through dictionary
+            doubledn_num = int(request.form.get(k,"")) ** 2 #multiplying the string number submitted from form
+            string_of_doubled_num = str(doubledn_num) #returning the number as a string
+            result_str += "Double your {} is: <i>{}</i><br><br>".format(k, string_of_doubled_num) #given the returned value in a string through html
+        return formstring + result_str #returning the original form along with input
         # Add more code here so that when someone enters a phrase, you see their data (somehow) AND the form!
     else:
         return formstring
@@ -96,6 +101,31 @@ def number_form():
 # You can assume that a user will give you the type of input/response you expect in your form; you do not need to handle errors or user confusion. (e.g. if your form asks for a name, you can assume a user will type a reasonable name; if your form asks for a number, you can assume a user will type a reasonable number; if your form asks the user to select a checkbox, you can assume they will do that.)
 
 # Points will be assigned for each specification in the problem.
+
+@app.route('/problem4form',methods=["GET","POST"])
+def enter_artist_name():
+    formstring = """<br><br>
+    <h1>Please enter your favorite artist: </h1>
+    <form action="http://localhost:5000/problem4form" method='POST'>
+<input type="text" name="artist"> <br><br>
+<input type="submit" value="Enter an artist name"> <br><br>
+"""
+    if request.method == "POST":
+        result_str = ""
+        for k in request.form:
+            artist_name = request.form.get(k,"")
+            baseurl = "https://itunes.apple.com/search?"
+            param_dict = {'term': artist_name, 'entity' : 'musicTrack'}
+            response = requests.get(baseurl, params = param_dict).json()['results']
+            tracks = []
+            for song in response:
+                tracks.append(song['trackName'])
+            # print(tracks)
+            result_str += "Some of <b>{}'s</b> tracks are: <i>{}</i><br><br>".format(artist_name,tracks)
+        return formstring + result_str #returning the original form along with input
+        # Add more code here so that when someone enters a phrase, you see their data (somehow) AND the form!
+    else:
+        return formstring
 
 
 if __name__ == "__main__":
