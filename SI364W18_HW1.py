@@ -9,17 +9,32 @@
 
 
 ## [PROBLEM 1] - 150 points
-## Below is code for one of the simplest possible Flask applications. 
-# Edit the code so that once you run this application locally and go to the URL 'http://localhost:5000/class', 
+## Below is code for one of the simplest possible Flask applications.
+# Edit the code so that once you run this application locally and go to the URL 'http://localhost:5000/class',
 # you see a page that says "Welcome to SI 364!"
 
 from flask import Flask
+import requests
+import json
 app = Flask(__name__)
 app.debug = True
 
-@app.route('/')
+@app.route('/class')
 def hello_to_you():
-    return 'Hello!'
+    return 'Welcome to SI 364!'
+
+@app.route('/movie/<movie_name>')
+def movie_data(movie_name):
+	baseurl = "https://itunes.apple.com/search?"
+	param_dict = {'term': movie_name, 'entity' : 'movie'}
+
+	response = requests.get(baseurl, params = param_dict).json()
+
+
+	return (str(response))
+
+
+
 
 
 if __name__ == '__main__':
@@ -27,7 +42,12 @@ if __name__ == '__main__':
 
 
 ## [PROBLEM 2] - 250 points
-## Edit the code chunk above again so that if you go to the URL 'http://localhost:5000/movie/<name-of-movie-here-one-word>' you see a big dictionary of data on the page. For example, if you go to the URL 'http://localhost:5000/movie/ratatouille', you should see something like the data shown in the included file sample_ratatouille_data.txt, which contains data about the animated movie Ratatouille. However, if you go to the url http://localhost:5000/movie/titanic, you should get different data, and if you go to the url 'http://localhost:5000/movie/dsagdsgskfsl' for example, you should see data on the page that looks like this:
+## Edit the code chunk above again so that if you go to the URL 'http://localhost:5000/movie/<name-of-movie-here-one-word>'
+# you see a big dictionary of data on the page. For example, if you go to the  URL 'http://localhost:5000/movie/ratatouille',
+# you should see something like the data shown in the included file sample_ratatouille_data.txt,
+# which contains data about the animated movie Ratatouille. However, if you go to the url http://localhost:5000/movie/titanic,
+# you should get different data, and if you go to the url 'http://localhost:5000/movie/dsagdsgskfsl'
+# for example, you should see data on the page that looks like this:
 
 # {
 #  "resultCount":0,
@@ -67,3 +87,7 @@ if __name__ == '__main__':
 # You can assume that a user will give you the type of input/response you expect in your form; you do not need to handle errors or user confusion. (e.g. if your form asks for a name, you can assume a user will type a reasonable name; if your form asks for a number, you can assume a user will type a reasonable number; if your form asks the user to select a checkbox, you can assume they will do that.)
 
 # Points will be assigned for each specification in the problem.
+
+
+if __name__ == "__main__":
+    app.run(use_reloader=True, debug=True)
